@@ -23,3 +23,5 @@ hotfix/[name] - This branch will automaticallt go into production this branch ty
     - The contains information about the project
 - Contributing.md
     - Contributing Guildlines / Information
+- .gitignore
+    - Ignores the files we don't need
