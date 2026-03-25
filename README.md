@@ -23,7 +23,7 @@ Backend Website:
     https://todo-list-full-stack-backend.vercel.app/
 ```
 # Project Versions
-iOS - NA
-Next.JS - NA
-Nest - NA
+iOS - <!--IOS_VERSION-->NA<!--IOS_VERSION_END-->
+Next.JS - <!--NEXT_VERSION-->NA<!--NEXT_VERSION_END-->
+Nest - <!--NEST_VERSION-->NA<!--NEST_VERSION_END-->
 
