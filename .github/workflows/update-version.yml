@@ -11,21 +11,21 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
-            uses: actions/checkout@v4
+              uses: actions/checkout@v4
 
             - name: Read Versions
-            id: versions
-            run: |
-            NEXT_VERSION=$(jq -r '.version' web/package.json)
-            echo "next=$NEXT_VERSION" >> $GITHUB_OUTPUT
-        - name: Update Readme
-            run: |
-            sed -i "<!--NEXT_VERSION-->.*<!--NEXT_VERSION_END-->|<!--NEXT_VERSION-->${{steps.versions.outputs.next}}<!--NEXT_VERSION_END-->|" README.md
+              id: versions
+              run: |
+                NEXT_VERSION=$(jq -r '.version' web/package.json)
+                echo "next=$NEXT_VERSION" >> $GITHUB_OUTPUT
+            - name: Update Readme
+              run: |
+               sed -i "<!--NEXT_VERSION-->.*<!--NEXT_VERSION_END-->|<!--NEXT_VERSION-->${{steps.versions.outputs.next}}<!--NEXT_VERSION_END-->|" README.md
 
-        - name: Commit Changes
-            run: |
-                git config iser.name "Github Actions"
-                git config user.email "github-actions@github.com"
-                git add README.md
-                git commit -m "chore: update versions in README" || echo "No Changes"
-                git push
+            - name: Commit Changes
+              run: |
+                    git config iser.name "Github Actions"
+                    git config user.email "github-actions@github.com"
+                    git add README.md
+                    git commit -m "chore: update versions in README" || echo "No Changes"
+                    git push
