@@ -1,48 +1,49 @@
-name: Update versions in README
+name: Update versions in Readme
 
-# This is an Event Listener, this action will only run for Push to our main branch
+# This is an Event Listener, this action will only run on Push to our main branch
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    update-readme:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Repo
-              uses: actions/checkout@v4
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
 
-            - name: Read Versions
-              id: versions
-              run: |
-                NEXT_VERSION=$(jq -r '.version' web/package.json)
-                echo "next=$NEXT_VERSION" >> $GITHUB_OUTPUT
-                NEST_VERSION=$(jq -r '.version' backend/package.json)
-                echo "nest=$NEST_VERSION" >> $GITHUB_OUTPUT
+      - name: Read Versions
+        id: versions
+        run: |
+          NEXT_VERSION=$(jq -r '.version' web/package.json)
+          echo "next=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          NEST_VERSION=$(jq -r '.version' backend/package.json)
+          echo "nest=$NEST_VERSION" >> $GITHUB_OUTPUT
 
-                IOS_VERSION="NA"
-                PBXPROJ=$(find . -name "project.pbxproj" | head -n 1)
-                if[ -n "$PBXPROJ" ]; then
-                    IOS_VERSION$(grep -m 1 "MARKETING_VERSION" "$PBXPROJ" | sed 's/.*= \(.*\); /\1/') | tr -d ' '
-                fi
+          IOS_VERSION="NA"
+          PBXPROJ=$(find . -name "project.pbxproj" | head -n 1)
+          if [ -n "$PBXPROJ" ]; then
+            IOS_VERSION=$(grep -m 1 "MARKETING_VERSION" "$PBXPROJ" | sed 's/.*= \(.*\); /\1/' | tr -d ' ') 
+          fi
+          
+          echo "ios=$IOS_VERSION" >> $GITHUB_OUTPUT
+    # 
+      - name: Update Readme
+        run: |
+          sed -i "s|<!--NEXT_VERSION-->.*<!--NEXT_VERSION_END-->|<!--NEXT_VERSION-->${{steps.versions.outputs.next}}<!--NEXT_VERSION_END-->|" README.md
 
-                echo "ios=$IOS_VERSION" >> $GITHUB_OUTPUT
+          sed -i "s|<!--NEST_VERSION-->.*<!--NEST_VERSION_END-->|<!--NEST_VERSION-->${{steps.versions.outputs.nest}}<!--NEST_VERSION_END-->|" README.md
 
-                # MARKETING_VERSION
+          sed -i "s|<!--IOS_VERSION-->.*<!--IOS_VERSION_END-->|<!--IOS_VERSION-->${{steps.versions.outputs.ios}}<!--IOS_VERSION_END-->|" README.md
 
-            - name: Update Readme
-              run: |
-               sed -i "s|<!--NEXT_VERSION-->.*<!--NEXT_VERSION_END-->|<!--NEXT_VERSION-->${{steps.versions.outputs.next}}<!--NEXT_VERSION_END-->|" README.md
-               sed -i "s|<!--NEST_VERSION-->.*<!--NEST_VERSION_END-->|<!--NEST_VERSION-->${{steps.versions.outputs.nest}}<!--NEST_VERSION_END-->|" README.md
-               sed -i "s|<!--IOS_VERSION-->.*<!--IOS_VERSION_END-->|<!--IOS_VERSION-->${{steps.versions.outputs.ios}}<!--IOS_VERSION_END-->|" README.md
-            - name: Commit Changes
-              run: |
-                    git config user.name "Github Actions"
-                    git config user.email "github-actions@github.com"
-                    git add README.md
-                    git commit -m "chore: update versions in README" || echo "No Changes"
-                    git push
+      - name: Commit Changes
+        run: |
+          git config user.name "Github Actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git commit -m "chore: update versions in README" || echo "No Changes"
+          git push
