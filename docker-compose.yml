@@ -1,20 +1,6 @@
 version: "3.9"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_db
-    restart: always
-    ports:
-      - "4955:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: BeATiger
-      MYSQL_DATABASE: todolist
-      MYSQL_USER: tiger
-      MYSQL_PASSWORD: AGoodPassword
-    volumes:
-      - mysql_data:/var/lib/mysql
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin_ui
@@ -27,6 +13,26 @@ services:
       MYSQL_ROOT_PASSWORD: BeATiger
     depends_on:
       - mysql
+
+  nest:
+    build: ./backend
+    container_name: backend
+    restart: always
+    ports:
+      - "6000:3000"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+
+  next:
+    build: ./web
+    container_name: frontend
+    restart: always
+    ports:
+      - "6001:3000"
+    depends_on:
+      - nest
 
 volumes:
   mysql_data:
