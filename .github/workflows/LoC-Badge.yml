@@ -1,0 +1,31 @@
+on: [push]
+
+permissions:
+    contents: write
+
+name: LoC Badge
+
+jobs:
+    LoC:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Make Code Badge
+              uses: shadowmoose/GHA-LoC-Badge@1.0.0
+              id: badge
+              with:
+                debug: true
+                directory: ./
+                badge: ./output/badge.svg
+                ignore: 'node_modules'
+            
+            - name: Deploy to LoC-Image Branch
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                publish_dir: ./output
+                publish_branch: LoC-Image
+                GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                user_name: 'github-actions[bot]'
+                user_email: 'github-actions[bot]@user.noreply.github.com'
